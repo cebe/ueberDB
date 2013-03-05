@@ -57,12 +57,46 @@ exports.database.prototype.get = function (key, callback) {
     this.client.get(key, callback);
 }
 
+// As redis provides only limited support for getting a list of all
+// available keys we can not provide this method for redis db.
+// See http://redis.io/commands/keys
+exports.database.prototype.findKeys = null;
+
 exports.database.prototype.set = function (key, value, callback) {
     this.client.set(key,value,callback);
 }
 
 exports.database.prototype.remove = function (key, callback) {
     this.client.del(key,callback);
+}
+
+/**
+ * Adds an item to a set of unique items
+ * @param itemSet the name of the set
+ * @param item the item to add
+ * @param callback
+ */
+exports.database.prototype.addSetItem = function (itemSet, item, callback) {
+    this.client.sadd(new Array(itemSet, item), callback);
+}
+
+/**
+ * Removes an item from a set of unique items
+ * @param itemSet the name of the set
+ * @param item the item to remove
+ * @param callback
+ */
+exports.database.prototype.removeSetItem = function (itemSet, item, callback) {
+    this.client.srem(new Array(itemSet, item), callback);
+}
+
+/**
+ * Returns a list of all items in a set
+ * @param itemSet the name of the set
+ * @param callback
+ */
+exports.database.prototype.listSetItems = function (itemSet, callback) {
+    this.client.smembers(itemSet, callback);
 }
 
 exports.database.prototype.doBulk = function (bulk, callback) {
